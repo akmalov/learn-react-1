@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --env production",
-    "server": "webpack-dev-server --content-base ./public --inline --hot --env development"
+    "server": "webpack-dev-server --content-base ./public --inline --hot --env development",
+    "start": "node ./public/server.js"
   },
   "author": "Sergey Akmalov <akmolgt@gmail.com>",
   "repository": {
@@ -25,6 +26,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.4",
+    "express": "^4.15.3",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "postcss-cssnext": "^3.0.2",

@@ -27,17 +27,31 @@ let Article = React.createClass({
             bigText: React.PropTypes.string.isRequired
         })
     },
+    getInitialState: function(){
+        return {
+            visible: false
+        };
+    },
+    readmoreClick: function(e) {
+        e.preventDefault();
+        this.setState({visible: true});
+    },
     render: function() {
        let author = this.props.last_news.author,
            text = this.props.last_news.text,
-           bigText = this.props.last_news.bigText;
+           bigText = this.props.last_news.bigText,
+           visible = this.state.visible;
 
        return (
            <div className='article'>
                <p className='news__author'>{author}:</p>
                <p className='news__text'>{text}</p>
-               <a href="#" className='news__readmore'>Подробнее</a>
-               <p className='news__big-text'>{bigText}</p>
+               <a href="#"
+                  onClick={this.readmoreClick}
+                  className={'news__readmore ' + (visible ? 'hidden': '')}>
+                  Подробнее
+               </a>
+               <p className={'news__big-text ' + (visible ? '': 'hidden')}>{bigText}</p>
            </div>
        )
    }
@@ -67,7 +81,7 @@ let News = React.createClass({
         return (
             <div className="news">
                 {newsTemplate}
-                <strong className={'news__count' + (last_news.length > 0 ? '' : 'none')}>Всего новостей: {last_news.length}</strong>
+                <strong className={'news__count' + (last_news.length > 0 ? '' : 'hidden')}>Всего новостей: {last_news.length}</strong>
             </div>
         );
     }

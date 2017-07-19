@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 let my_news = [
     {
         author: 'Саша Печкин',
-        text: 'В четверг, четвёртого числа...'
+        text: 'В четверг, четвёртого числа...',
     },
     {
         author: 'Просто Вася',
@@ -16,7 +16,31 @@ let my_news = [
     }
 ];
 
+let Article = React.createClass({
+    propTypes: {
+        last_news: React.PropTypes.shape({
+            author: React.PropTypes.string.isRequired,
+            text: React.PropTypes.string.isRequired
+        })
+    },
+    render: function() {
+       let author = this.props.last_news.author,
+           text = this.props.last_news.text;
+
+       return (
+           <div className="article">
+               <p className="news__author">{author}:</p>
+               <p className="news__text">{text}</p>
+           </div>
+       )
+   }
+});
+
 let News = React.createClass({
+    propTypes: {
+      last_news: React.PropTypes.array.isRequired
+    },
+
     render: function() {
         let last_news = this.props.last_news;
         let newsTemplate;
@@ -25,8 +49,7 @@ let News = React.createClass({
             newsTemplate = last_news.map(function(item, index) {
                 return (
                     <div key={index}>
-                        <p className="news__author">{item.author}:</p>
-                        <p className="news__text">{item.text}</p>
+                        <Article last_news={item} />
                     </div>
                 )
             });
@@ -37,17 +60,7 @@ let News = React.createClass({
         return (
             <div className="news">
                 {newsTemplate}
-                <strong className={last_news.length > 0 ? '' : 'none'}>Всего новостей: {last_news.length}</strong>
-            </div>
-        );
-    }
-});
-
-let Comments = React.createClass({
-    render: function() {
-        return (
-            <div className="comments">
-                Нет новостей - комментировать нечего.
+                <strong className={'news__count' + (last_news.length > 0 ? '' : 'none')}>Всего новостей: {last_news.length}</strong>
             </div>
         );
     }
@@ -57,9 +70,8 @@ let App = React.createClass({
     render: function() {
         return (
             <div className="app">
-                Отображение новостей
+                <h3>Новости</h3>
                 <News last_news={my_news} />
-                <Comments />
             </div>
         );
     }

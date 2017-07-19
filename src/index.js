@@ -79,12 +79,76 @@ let News = React.createClass({
         }
 
         return (
-            <div className="news">
+            <div className='news'>
                 {newsTemplate}
-                <strong className={'news__count' + (last_news.length > 0 ? '' : 'hidden')}>Всего новостей: {last_news.length}</strong>
+                <strong
+                    className={'news__count' + (last_news.length > 0 ? '' : 'hidden')}>
+                    Всего новостей: {last_news.length}
+                    </strong>
             </div>
         );
     }
+});
+
+let Add = React.createClass({
+    getInitialState: function() {
+        return {
+            agreeNotChecked: true,
+            authorIsEmpty: true,
+            textIsEmpty: true
+        };
+    },
+    componentDidMount: function() {
+        ReactDOM.findDOMNode(this.refs.author).focus();
+    },
+    onBtnClickHandler: function(e) {
+        e.preventDefault();
+        let author = ReactDOM.findDOMNode(this.refs.author).value;
+        let text = ReactDOM.findDOMNode(this.refs.text).value;
+        alert(author + 'n' + text);
+    },
+    onCheckRuleClick: function(e) {
+      this.setState({agreeNotChecked: !this.state.agreeNotChecked});
+    },
+    onFieldChange: function(fieldName, e) {
+      if (e.target.value.trim().length > 0) {
+          this.setState({['' + fieldName]:false})
+      }  else {
+          this.setState({['' + fieldName]:true})
+      }
+    },
+    render: function() {
+        let agreeNotChecked = this.state.agreeNotChecked,
+            authorIsEmpty = this.state.authorIsEmpty,
+            textIsEmpty = this.state.textIsEmpty
+        return (
+           <form className='add cf'>
+               <input
+                   type='text'
+                   className='add__author'
+                   onChange={this.onFieldChange.bind(this, 'authorIsEmpty')}
+                   placeholder='Ваше имя'
+                   ref='author'
+               />
+               <textarea
+                   className='add__text'
+                   onChange={this.onFieldChange.bind(this, 'textIsEmpty')}
+                   placeholder='Текст новости'
+                   ref='text'
+               />
+               <label className='add__checkrule'>
+                   <input type='checkbox' defaultChecked={false} ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
+               </label>
+               <button
+                   className='add__btn'
+                   onClick={this.onBtnClickHandler}
+                   ref='alert_button'
+                   disabled={agreeNotChecked || authorIsEmpty || textIsEmpty}>
+                   Показать alert
+               </button>
+           </form>
+       )
+   }
 });
 
 let App = React.createClass({
@@ -92,6 +156,7 @@ let App = React.createClass({
         return (
             <div className='app'>
                 <h3>Новости</h3>
+                <Add/>
                 <News last_news={my_news} />
             </div>
         );

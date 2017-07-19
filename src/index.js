@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import EventEmitter from 'wolfy87-eventemitter';
+let ee = new EventEmitter();
 
 let my_news = [
     {
@@ -73,7 +75,7 @@ let News = React.createClass({
                         <Article last_news={item} />
                     </div>
                 )
-            });
+            })
         } else {
             newsTemplate = <p>К сожалению новостей нет.</p>
         }
@@ -103,9 +105,21 @@ let Add = React.createClass({
     },
     onBtnClickHandler: function(e) {
         e.preventDefault();
+        let textEl = ReactDOM.findDOMNode(this.refs.text);
+
         let author = ReactDOM.findDOMNode(this.refs.author).value;
-        let text = ReactDOM.findDOMNode(this.refs.text).value;
-        alert(author + 'n' + text);
+        let text = textEl.value;
+
+        let item = [{
+            author: author,
+            text: text,
+            bigText: '...'
+        }];
+
+        ee.emit('News.add', item);
+
+        textEl.value = '';
+        this.setState({textIsEmpty: true})
     },
     onCheckRuleClick: function(e) {
       this.setState({agreeNotChecked: !this.state.agreeNotChecked});
@@ -120,7 +134,7 @@ let Add = React.createClass({
     render: function() {
         let agreeNotChecked = this.state.agreeNotChecked,
             authorIsEmpty = this.state.authorIsEmpty,
-            textIsEmpty = this.state.textIsEmpty
+            textIsEmpty = this.state.textIsEmpty;
         return (
            <form className='add cf'>
                <input
@@ -137,14 +151,14 @@ let Add = React.createClass({
                    ref='text'
                />
                <label className='add__checkrule'>
-                   <input type='checkbox' defaultChecked={false} ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
+                   <input type='checkbox' ref='checkrule' onChange={this.onCheckRuleClick}/>Я согласен с правилами
                </label>
                <button
                    className='add__btn'
                    onClick={this.onBtnClickHandler}
                    ref='alert_button'
                    disabled={agreeNotChecked || authorIsEmpty || textIsEmpty}>
-                   Показать alert
+                   Добавить новость
                </button>
            </form>
        )
@@ -152,12 +166,27 @@ let Add = React.createClass({
 });
 
 let App = React.createClass({
+    getInitialState: function() {
+      return {
+          news: my_news
+      };
+    },
+    componentDidMount: function() {
+        let self = this;
+        ee.addListener('News.add', function(item) {
+            let nextNews = item.concat(self.state.news);
+            self.setState({news: nextNews});
+        });
+    },
+    componentWillUnmount: function() {
+        ee.removeListener('News.add');
+    },
     render: function() {
         return (
             <div className='app'>
-                <h3>Новости</h3>
                 <Add/>
-                <News last_news={my_news} />
+                <h3>Новости</h3>
+                <News last_news={this.state.news} />
             </div>
         );
     }
